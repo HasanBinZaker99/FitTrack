@@ -10,7 +10,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-      let response = await fetch("https://gymtracker-3.onrender.com/login", {
+      let response = await fetch("https://fittrack-0383.onrender.com/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

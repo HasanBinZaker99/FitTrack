@@ -41,7 +41,7 @@ export default function WorkoutOptions() {
       if (!email) return;
 
       const response = await fetch(
-        "https://gymtracker-3.onrender.com/create-workoutOptions",
+        "https://fittrack-0383.onrender.com/create-workoutOptions",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

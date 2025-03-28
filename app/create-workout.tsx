@@ -1,32 +1,66 @@
-import React from "react";
-import { StyleSheet, Text, View, ToastAndroid, Platform } from "react-native";
-
-const API_URL = "https://gymtracker-3.onrender.com/create-workout";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ToastAndroid,
+  Platform,
+  Button,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // @ts-ignore
 import RadioForm from "react-native-simple-radio-button";
 
-// Define the radio button data
+const API_URL = "https://fittrack-0383.onrender.com/create-workoutOptions";
+
 const hobbies = [
-  { label: "Teasing", value: 0 },
-  { label: "Catching plate", value: 1 },
-  { label: "Soaking in the mud", value: 2 },
+  { label: "Teasing", value: "Teasing" },
+  { label: "Catching plate", value: "Catching plate" },
+  { label: "Soaking in the mud", value: "Soaking in the mud" },
 ];
 
-const App: React.FC = () => {
-  const handlePress = (value: number) => {
-    if (Platform.OS === "android") {
-      ToastAndroid.show(value.toString(), ToastAndroid.SHORT);
-    } else {
-      console.log("Selected value:", value);
+export default function CreateWorkout() {
+  const [selectedWorkout, setSelectedWorkout] = useState(hobbies[0].value);
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    const getEmail = async () => {
+      const email = await AsyncStorage.getItem("userEmail");
+      if (email) setUserEmail(email);
+    };
+    getEmail();
+  }, []);
+
+  const saveWorkout = async () => {
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userEmail,
+          workouts: [selectedWorkout], // send as array
+        }),
+      });
+
+      const json = await response.json();
+      if (response.ok) {
+        ToastAndroid.show("Saved: " + selectedWorkout, ToastAndroid.SHORT);
+        console.log("✅ Saved:", json);
+      } else {
+        console.warn("❌ Server Error:", json);
+      }
+    } catch (err) {
+      console.error("❌ Network Error:", err);
     }
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Choose a Workout</Text>
       <RadioForm
         radio_props={hobbies}
-        initial={1}
-        onPress={handlePress}
+        initial={0}
+        onPress={(value: string) => setSelectedWorkout(value)}
         buttonSize={14}
         buttonOuterSize={24}
         selectedButtonColor={"green"}
@@ -34,68 +68,12 @@ const App: React.FC = () => {
         labelStyle={{ fontSize: 20 }}
         formHorizontal={false}
       />
+      <Button title="Save Workout" onPress={saveWorkout} />
     </View>
   );
-};
-
-export default App;
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "#F5FCFF",
-    paddingHorizontal: 20,
-  },
+  container: { flex: 1, justifyContent: "center", padding: 20 },
+  title: { fontSize: 24, textAlign: "center", marginBottom: 20 },
 });
-
-// import React, { useState, useEffect } from "react";
-// import {
-//   CheckBox,
-//   View,
-//   Text,
-//   TouchableOpacity,
-//   StyleSheet,
-// } from "react-native";
-// import DateTimePickerModal from "react-native-modal-datetime-picker";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { useRouter } from "expo-router";
-// import moment from "moment";
-// import axios from "axios";
-
-// const API_URL = "https://gymtracker-3.onrender.com/create-workout";
-
-// export default function CreateWorkout() {
-//   const [isSelected, setSelection] = useState(false);
-//   const router = useRouter();
-//   const [selectWorkouts, setSelectedWorkouts] = useState<string[]>([]);
-//   const [selectedDate, setSelectedDate] = useState(new Date());
-//   const [showDatePicker, setShowDatePicker] = useState(false);
-//   const [workoutOptions, setWorkoutOptions] = useState<string[]>([]);
-//   const [tickStatuses, setTickStatuses] = useState<{ [key: string]: string }>(
-//     {}
-//   );
-
-//   const [userEmail, setUserEmail] = useState("");
-
-//   return (
-
-//   )
-// }
-// const styles = StyleSheet.create({
-//     container: {
-//       flex: 1,
-//       alignItems: 'center',
-//       justifyContent: 'center',
-//     },
-//     checkboxContainer: {
-//       flexDirection: 'row',
-//       marginBottom: 20,
-//     },
-//     checkbox: {
-//       alignSelf: 'center',
-//     },
-//     label: {
-//       margin: 8,
-//     },
-//   });
